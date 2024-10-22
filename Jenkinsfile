@@ -7,7 +7,7 @@ pipeline {
         stage("Testing Library Connection") {
             steps {
                 script {
-                    hello_world()
+                    test_connection()
                 }
             }
         }
