@@ -1,7 +1,7 @@
 @Library("Shared") _
 
 pipeline {
-    agent { label "test1" }
+    agent any
 
     stages {
         stage("Testing Library Connection") {
