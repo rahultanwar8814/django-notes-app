@@ -1,38 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
-  namespace: notes
+  name: django-deployment
   labels:
-    app: frontend
+    app: django-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: django-app
   template:
     metadata:
-      name: frontend
       labels:
-        app: frontend
+        app: django-app
     spec:
       containers:
-        - name: frontend
+        - name: django-container
           image: rahultanwar/notes-app:latest
           ports:
             - containerPort: 8000
+          # If environment variables are required, they can be set here.
+          # env:
+          #   - name: DJANGO_ENV
+          #     value: "production"
+          #   - name: DJANGO_SECRET_KEY
+          #     value: "your-secret-key"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
-  namespace: notes
+  name: django-service
 spec:
   type: NodePort
   selector:
-    app: frontend
+    app: django-app
   ports:
-    - port: 8000
-      targetPort: 8000
+    - port: 8000          # The port the service will expose
+      targetPort: 8000     # The port the container listens on (in the Dockerfile)
       protocol: TCP
-      nodePort: 30001
+      nodePort: 30002      # Custom NodePort. If omitted, Kubernetes assigns a random port.
