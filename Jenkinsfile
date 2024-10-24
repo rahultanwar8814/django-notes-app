@@ -7,6 +7,9 @@ pipeline {
         SCAN_PATH = '.'  // Specify the path to scan, '.' for current directory
         SONAR_HOME = tool "sonar"
     }
+    tools {
+        nodejs 'NodeJS' // Use the name of your Node.js installation from Global Tool Configuration
+    }
 
     stages {
         stage("Testing Library Connection") {
