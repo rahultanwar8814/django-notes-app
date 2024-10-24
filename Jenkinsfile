@@ -2,12 +2,22 @@
 
 pipeline {
     agent any
+    environment{
+        SONAR_HOME = tool "sonar"
+    }
 
     stages {
         stage("Testing Library Connection") {
             steps {
                 script {
                     test_connection()
+                }
+            }
+        }
+        stage("Workspace cleanup"){
+            steps{
+                script{
+                    cleanWs()
                 }
             }
         }
@@ -20,6 +30,39 @@ pipeline {
             }
         }
 
+        stage("Trivy: Filesystem scan"){
+            steps{
+                script{
+                    trivy_scan()
+                }
+            }
+        }
+
+        stage("OWASP: Dependency check"){
+            steps{
+                script{
+                    owasp_dependency()
+                }
+            }
+        }
+        
+        stage("SonarQube: Code Analysis"){
+            steps{
+                script{
+                    sonarqube_analysis("Sonar","wanderlust","wanderlust")
+                }
+            }
+        }
+        
+        stage("SonarQube: Code Quality Gates"){
+            steps{
+                script{
+                    sonarqube_code_quality()
+                }
+            }
+        }
+        
+
         stage("Build") {
             steps {
                 script {
@@ -27,6 +70,7 @@ pipeline {
                 }
             }
         }
+
 
         stage("Push to DockerHub") {
             steps {
