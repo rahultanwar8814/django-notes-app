@@ -3,12 +3,9 @@
 pipeline {
     agent any
     environment{
-        SONAR_HOME = tool "sonar"
-    }
-
-    environment {
         TRIVY_OUTPUT = 'trivy-results' // Directory where scan results will be saved
         SCAN_PATH = '.'  // Specify the path to scan, '.' for current directory
+        SONAR_HOME = tool "sonar"
     }
 
     stages {
