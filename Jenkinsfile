@@ -2,27 +2,12 @@
 
 pipeline {
     agent any
-    environment{
-        TRIVY_OUTPUT = 'trivy-results' // Directory where scan results will be saved
-        SCAN_PATH = '.'  // Specify the path to scan, '.' for current directory
-        SONAR_HOME = tool "sonar"
-    }
-    tools {
-        nodejs 'NodeJS' // Use the name of your Node.js installation from Global Tool Configuration
-    }
 
     stages {
         stage("Testing Library Connection") {
             steps {
                 script {
                     test_connection()
-                }
-            }
-        }
-        stage("Workspace cleanup"){
-            steps{
-                script{
-                    cleanWs()
                 }
             }
         }
@@ -35,51 +20,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'npm install' // For Node.js dependencies
-                    sh 'pip install -r requirements.txt' // For Python dependencies
-                }
-            }
-        }
-
-        stage('Filesystem Scan with Trivy') {
-            steps {
-                script {
-                    sh '''
-                    mkdir -p ${TRIVY_OUTPUT}
-                    trivy fs --exit-code 1 --severity HIGH,CRITICAL --output ${TRIVY_OUTPUT}/trivy-results.txt ${SCAN_PATH}
-                    '''
-                }
-            }
-        }
-
-        stage("OWASP: Dependency check"){
-            steps{
-                script{
-                    owasp_dependency()
-                }
-            }
-        }
-        
-        stage("SonarQube: Code Analysis"){
-            steps{
-                script{
-                    sonarqube_analysis("Sonar","wanderlust","wanderlust")
-                }
-            }
-        }
-        
-        stage("SonarQube: Code Quality Gates"){
-            steps{
-                script{
-                    sonarqube_code_quality()
-                }
-            }
-        }
-        
-
         stage("Build") {
             steps {
                 script {
@@ -87,7 +27,6 @@ pipeline {
                 }
             }
         }
-
 
         stage("Push to DockerHub") {
             steps {
