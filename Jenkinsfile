@@ -35,6 +35,12 @@ pipeline {
         stage('Filesystem Scan with Trivy') {
             steps {
                 script {
+                    sh 'npm install' // For Node.js dependencies
+                    sh 'pip install -r requirements.txt' // For Python dependencies
+                }
+            }
+            steps {
+                script {
                     sh '''
                     mkdir -p ${TRIVY_OUTPUT}
                     trivy fs --exit-code 1 --severity HIGH,CRITICAL --output ${TRIVY_OUTPUT}/trivy-results.txt ${SCAN_PATH}
