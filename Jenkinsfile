@@ -6,6 +6,11 @@ pipeline {
         SONAR_HOME = tool "sonar"
     }
 
+    environment {
+        TRIVY_OUTPUT = 'trivy-results' // Directory where scan results will be saved
+        SCAN_PATH = '.'  // Specify the path to scan, '.' for current directory
+    }
+
     stages {
         stage("Testing Library Connection") {
             steps {
@@ -30,10 +35,13 @@ pipeline {
             }
         }
 
-        stage("Trivy: Filesystem scan"){
-            steps{
-                script{
-                    trivy_scan()
+        stage('Filesystem Scan with Trivy') {
+            steps {
+                script {
+                    sh '''
+                    mkdir -p ${TRIVY_OUTPUT}
+                    trivy fs --exit-code 1 --severity HIGH,CRITICAL --output ${TRIVY_OUTPUT}/trivy-results.txt ${SCAN_PATH}
+                    '''
                 }
             }
         }
