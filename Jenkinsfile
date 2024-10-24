@@ -32,13 +32,16 @@ pipeline {
             }
         }
 
-        stage('Filesystem Scan with Trivy') {
+        stage('Install Dependencies') {
             steps {
                 script {
                     sh 'npm install' // For Node.js dependencies
                     sh 'pip install -r requirements.txt' // For Python dependencies
                 }
             }
+        }
+
+        stage('Filesystem Scan with Trivy') {
             steps {
                 script {
                     sh '''
